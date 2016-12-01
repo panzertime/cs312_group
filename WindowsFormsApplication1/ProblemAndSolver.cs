@@ -497,12 +497,17 @@ namespace TSP
         public string[] GreedySolveProblem()
         {
             var results = new string[3];
+            var timer = new Stopwatch();
 
-            // TODO: Add your implementation for a greedy solver here.
+            Debug.Assert(_cities.Length > 0);
+            var state = GreedyCalc(new TspState(_cities));
+            timer.Start();
+            _bssf = StateToSolution(state);
+            timer.Stop();
 
-            results[Cost] = "not implemented"; // load results into array here, replacing these dummy values
-            results[Time] = "-1";
-            results[Count] = "-1";
+            results[Cost] = CostOfBssf().ToString(CultureInfo.InvariantCulture);
+            results[Time] = timer.Elapsed.ToString();
+            results[Count] = (_cities.Length + 1).ToString();
 
             return results;
         }
