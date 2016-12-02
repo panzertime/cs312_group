@@ -512,13 +512,26 @@ namespace TSP
             return results;
         }
 
-        public string[] FancySolveProblem()
+        public string[] TwoOptSolveProblem()
         {
             var results = new string[3];
 
-            // TODO: Add your implementation for your advanced solver here.
+            // TODO: Add your implementation for 2-opt here.
 
-            results[Cost] = "not implemented"; // load results into array here, replacing these dummy values
+            results[Cost] = "2-opt not implemented";
+            results[Time] = "-1";
+            results[Count] = "-1";
+
+            return results;
+        }
+
+        public string[] ThreeOptSolveProblem()
+        {
+            var results = new string[3];
+
+            // TODO: Add your implementation for 3-opt here.
+
+            results[Cost] = "3-opt not implemented";
             results[Time] = "-1";
             results[Count] = "-1";
 

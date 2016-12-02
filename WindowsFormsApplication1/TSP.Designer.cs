@@ -50,7 +50,8 @@ namespace TSP
             this.toolStrip2 = new System.Windows.Forms.ToolStrip();
             this.toolStripLabel7 = new System.Windows.Forms.ToolStripLabel();
             this.AlgorithmMenu2 = new System.Windows.Forms.ToolStripSplitButton();
-            this.myTSPToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.twoOptToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.threeOptToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.greedyToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.bBToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.defaultToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -91,7 +92,6 @@ namespace TSP
             this.toolStrip1.Size = new System.Drawing.Size(749, 25);
             this.toolStrip1.TabIndex = 0;
             this.toolStrip1.Text = "toolStrip1";
-            this.toolStrip1.ItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.toolStrip1_ItemClicked);
             // 
             // toolStripLabel8
             // 
@@ -220,25 +220,33 @@ namespace TSP
             // 
             this.AlgorithmMenu2.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.AlgorithmMenu2.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.myTSPToolStripMenuItem,
+            this.twoOptToolStripMenuItem,
+            this.threeOptToolStripMenuItem,
             this.greedyToolStripMenuItem,
             this.bBToolStripMenuItem,
             this.defaultToolStripMenuItem});
             this.AlgorithmMenu2.Image = ((System.Drawing.Image)(resources.GetObject("AlgorithmMenu2.Image")));
             this.AlgorithmMenu2.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.AlgorithmMenu2.Name = "AlgorithmMenu2";
-            this.AlgorithmMenu2.Size = new System.Drawing.Size(63, 22);
-            this.AlgorithmMenu2.Tag = "B and B";
-            this.AlgorithmMenu2.Text = "B and B";
+            this.AlgorithmMenu2.Size = new System.Drawing.Size(61, 22);
+            this.AlgorithmMenu2.Tag = "Default";
+            this.AlgorithmMenu2.Text = "Default";
             this.AlgorithmMenu2.ButtonClick += new System.EventHandler(this.AlgorithmMenu2_ButtonClick_1);
             this.AlgorithmMenu2.DropDownItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.AlgorithmMenu2_DropDownItemClicked);
             // 
-            // myTSPToolStripMenuItem
+            // twoOptToolStripMenuItem
             // 
-            this.myTSPToolStripMenuItem.Name = "myTSPToolStripMenuItem";
-            this.myTSPToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.myTSPToolStripMenuItem.Text = "My TSP";
-            this.myTSPToolStripMenuItem.Click += new System.EventHandler(this.myTSPToolStripMenuItem_Click);
+            this.twoOptToolStripMenuItem.Name = "twoOptToolStripMenuItem";
+            this.twoOptToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.twoOptToolStripMenuItem.Text = "2-opt";
+            this.twoOptToolStripMenuItem.Click += new System.EventHandler(this.twoOptToolStripMenuItem_Click);
+            // 
+            // threeOptToolStripMenuItem
+            // 
+            this.threeOptToolStripMenuItem.Name = "threeOptToolStripMenuItem";
+            this.threeOptToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.threeOptToolStripMenuItem.Text = "3-opt";
+            this.threeOptToolStripMenuItem.Click += new System.EventHandler(this.threeOptToolStripMenuItem_Click);
             // 
             // greedyToolStripMenuItem
             // 
@@ -369,7 +377,7 @@ namespace TSP
         private ToolStripButton randomProblem;
         private ToolStripLabel toolStripLabel7;
         private ToolStripSplitButton AlgorithmMenu2;
-        private ToolStripMenuItem myTSPToolStripMenuItem;
+        private ToolStripMenuItem twoOptToolStripMenuItem;
 //        private System.Windows.Forms.ToolStripMenuItem randomToolStripMenuItem;
         private ToolStripMenuItem bBToolStripMenuItem;
         private ToolStripMenuItem greedyToolStripMenuItem;
@@ -383,9 +391,7 @@ namespace TSP
         private ToolStripLabel toolStripLabel8;
         private ToolStripTextBox tbTimeLimit;
         private ToolStripSeparator toolStripSeparator9;
-
-
-
+        private ToolStripMenuItem threeOptToolStripMenuItem;
     }
 }
 

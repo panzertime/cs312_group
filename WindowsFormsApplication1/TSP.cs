@@ -169,7 +169,7 @@ namespace TSP
             };
         }
 
-        private async void defaultToolStripMenuItem_Click(object sender, EventArgs e)
+        private async Task<string[]> RunTspCalc(Func<string[]> solver)
         {
             reset();
 
@@ -177,60 +177,40 @@ namespace TSP
             tbCostOfTour.Text = " Running...";
             Refresh();
 
-            var results = await Task.Run(() => _cityData.DefaultSolveProblem());
+            var results = await Task.Run(solver);
 
-            tbCostOfTour.Text = results[ProblemAndSolver.Cost];                        
+            tbCostOfTour.Text = results[ProblemAndSolver.Cost];
             tbElapsedTime.Text = results[ProblemAndSolver.Time];
-            tbNumSolutions.Text = results[ProblemAndSolver.Count];               
-            Invalidate();                          // force a refresh.
+            tbNumSolutions.Text = results[ProblemAndSolver.Count];
+            Invalidate();
+
+            return results;
+        }
+
+        private async void defaultToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            // Needs to be done with a wrapping lambda as RunTspCalc resets _cityData.
+            await RunTspCalc(() => _cityData.DefaultSolveProblem());
         }
 
         private async void bBToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            reset();
-
-            tbElapsedTime.Text = " Running...";
-            tbCostOfTour.Text = " Running...";
-            Refresh();
-
-            var results = await Task.Run(() => _cityData.BranchBoundSolveProblem());
-
-            tbCostOfTour.Text = results[ProblemAndSolver.Cost];
-            tbElapsedTime.Text = results[ProblemAndSolver.Time];
-            tbNumSolutions.Text = results[ProblemAndSolver.Count];
-            Invalidate();                          // force a refresh.
+            await RunTspCalc(() => _cityData.BranchBoundSolveProblem());
         }
 
         private async void greedyToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            reset();
-
-            tbElapsedTime.Text = " Running...";
-            tbCostOfTour.Text = " Running...";
-            Refresh();
-
-            var results = await Task.Run(() => _cityData.GreedySolveProblem());
-
-            tbCostOfTour.Text = results[ProblemAndSolver.Cost];
-            tbElapsedTime.Text = results[ProblemAndSolver.Time];
-            tbNumSolutions.Text = results[ProblemAndSolver.Count];
-            Invalidate();                          // force a refresh.
+            await RunTspCalc(() => _cityData.GreedySolveProblem());
         }
 
-        private async void myTSPToolStripMenuItem_Click(object sender, EventArgs e)
+        private async void twoOptToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            reset();
+            await RunTspCalc(() => _cityData.TwoOptSolveProblem());
+        }
 
-            tbElapsedTime.Text = " Running...";
-            tbCostOfTour.Text = " Running...";
-            Refresh();
-
-            var results = await Task.Run(() => _cityData.FancySolveProblem());
-
-            tbCostOfTour.Text = results[ProblemAndSolver.Cost];
-            tbElapsedTime.Text = results[ProblemAndSolver.Time];
-            tbNumSolutions.Text = results[ProblemAndSolver.Count];
-            Invalidate();                          // force a refresh.
+        private async void threeOptToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            await RunTspCalc(() => _cityData.ThreeOptSolveProblem());
         }
 
         private void AlgorithmMenu2_DropDownItemClicked(object sender, ToolStripItemClickedEventArgs e)
@@ -249,11 +229,6 @@ namespace TSP
             {
                 AlgorithmMenu2.ShowDropDown();
             }
-        }
-
-        private void toolStrip1_ItemClicked(object sender, ToolStripItemClickedEventArgs e)
-        {
-
         }
     }
 }
