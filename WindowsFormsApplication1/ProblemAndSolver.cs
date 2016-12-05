@@ -516,9 +516,23 @@ namespace TSP
         {
             var results = new string[3];
 
-            // TODO: Add your implementation for 2-opt here.
+        // TODO: Add your implementation for 2-opt here.   repeat until no improvement is made {
+        /*start_again:
+            best_distance = calculateTotalDistance(existing_route)
+       for (i = 0; i < number of nodes eligible to be swapped - 1; i++) {
+                for (k = i + 1; k < number of nodes eligible to be swapped; k++) {
+                    new_route = 2optSwap(existing_route, i, k)
+                    new_distance = calculateTotalDistance(new_route)
+                    if (new_distance < best_distance)
+                    {
+                        existing_route = new_route
+                   goto start_again
+               }
+                }
+            }
+        }*/
 
-            results[Cost] = "2-opt not implemented";
+        results[Cost] = "2-opt not implemented";
             results[Time] = "-1";
             results[Count] = "-1";
 
@@ -526,7 +540,7 @@ namespace TSP
         }
 
         /* 2-Opt solution is based on psuedo code found at https://en.wikipedia.org/wiki/2-opt */
-        private List<City> swap(List<City> curRoute, int i, int k)
+        private List<City> twoOptSwap(List<City> curRoute, int i, int k)
         {
             List<City> newRoute = new List<City>();
             // 1.take route[1] to route[i - 1] and add them in order to new_route
@@ -544,8 +558,7 @@ namespace TSP
             {
                 newRoute.Add(curRoute[p]);
             }
-       return newRoute;
-
+            return newRoute;
         }
 
         public string[] ThreeOptSolveProblem()
