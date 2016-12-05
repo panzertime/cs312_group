@@ -459,14 +459,14 @@ namespace TSP
                     break;
             }
             timer.Stop();
-
+            
             Debug.Assert(bestState != null && bestState.IsComplete);
             _bssf = StateToSolution(bestState);
 
             results[Cost] = CostOfBssf().ToString(CultureInfo.InvariantCulture); // load results array
             results[Time] = timer.Elapsed.ToString();
             results[Count] = $"{maxStates}/{updates}/{stored}/{pruned}";
-
+            
             return results;
         }
 
@@ -525,6 +525,29 @@ namespace TSP
             return results;
         }
 
+        /* 2-Opt solution is based on psuedo code found at https://en.wikipedia.org/wiki/2-opt */
+        private List<City> swap(List<City> curRoute, int i, int k)
+        {
+            List<City> newRoute = new List<City>();
+            // 1.take route[1] to route[i - 1] and add them in order to new_route
+            for (int p = 0; p < i; p++)
+            {
+                newRoute.Add(curRoute[p]);
+            }
+            // 2.take route[i] to route[k] and add them in reverse order to new_route
+            for(int p = k; p >= i; p--)
+            {
+                newRoute.Add(curRoute[p]);
+            }
+            // 3.take route[k + 1] to end and add them in order to new_route
+            for(int p = k +1; p < curRoute.Count; p++)
+            {
+                newRoute.Add(curRoute[p]);
+            }
+       return newRoute;
+
+        }
+
         public string[] ThreeOptSolveProblem()
         {
             var results = new string[3];
@@ -541,3 +564,4 @@ namespace TSP
         #endregion
     }
 }
+ 
