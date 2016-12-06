@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
@@ -516,49 +517,112 @@ namespace TSP
         {
             var results = new string[3];
 
-        // TODO: Add your implementation for 2-opt here.   repeat until no improvement is made {
-        /*start_again:
-            best_distance = calculateTotalDistance(existing_route)
-       for (i = 0; i < number of nodes eligible to be swapped - 1; i++) {
-                for (k = i + 1; k < number of nodes eligible to be swapped; k++) {
-                    new_route = 2optSwap(existing_route, i, k)
-                    new_distance = calculateTotalDistance(new_route)
-                    if (new_distance < best_distance)
-                    {
-                        existing_route = new_route
-                   goto start_again
-               }
-                }
-            }
-        }*/
+            // get initial bssf using default algorithm
+            int i, swap, temp, count = 0;
+            int[] perm = new int[_cities.Length];
+            _route = new List<City>();
+            Random rnd = new Random();
 
-        results[Cost] = "2-opt not implemented";
-            results[Time] = "-1";
-            results[Count] = "-1";
+            do
+            {
+                for (i = 0; i < perm.Length; i++)                                 // create a random permutation template
+                    perm[i] = i;
+                for (i = 0; i < perm.Length; i++)
+                {
+                    swap = i;
+                    while (swap == i)
+                        swap = rnd.Next(0, _cities.Length);
+                    temp = perm[i];
+                    perm[i] = perm[swap];
+                    perm[swap] = temp;
+                }
+                _route.Clear();
+                for (i = 0; i < _cities.Length; i++)                            // Now build the route using the random permutation 
+                {
+                    _route.Add(_cities[perm[i]]);
+                }
+                _bssf = new TspSolution(_route);
+            } while (CostOfBssf() == double.PositiveInfinity);                // until a valid route is found
+
+
+
+            Stopwatch timer = new Stopwatch();
+            timer.Start();
+            count = 0;
+            TspSolution prevSolution = _bssf;
+
+            bool found = false;
+            do
+            {
+                double bestDist = _bssf.CostOfRoute();
+                for(i = 0; i < _bssf.Route.Count; i++)
+                {
+                    found = false;
+                    for(int k = i + 1; k < _bssf.Route.Count; k++)
+                    {
+                        TspSolution newRoute = twoOptSwap(_bssf, i, k);
+                        double newDist = newRoute.CostOfRoute();
+                        if(isCompleteSolution(newRoute) && newDist < bestDist)
+                        {
+                            prevSolution = _bssf;
+                            _bssf = newRoute;
+                            found = true;
+                            count++;
+                            break;
+                        }
+                    }
+                    if (found)
+                        break;
+                }
+            } while (found);
+
+            
+            timer.Stop();
+
+            results[Cost] = _bssf.CostOfRoute().ToString();
+            results[Time] = timer.Elapsed.ToString();
+            results[Count] = count.ToString();
 
             return results;
         }
 
+        //O(n^2)
+        private bool isCompleteSolution(TspSolution tspSolution)
+        {
+            if (tspSolution.Route.Count != _cities.Length)
+                return false;
+            //O(n^2)
+            for (int i = 0; i < _cities.Length; i++)
+            {
+                //O(n)
+                if (!tspSolution.Route.Contains(_cities[i]))
+                    return false;
+                if (i+ 1 < _cities.Length && tspSolution.Route[i].CostToGetTo(tspSolution.Route[i + 1]) == double.PositiveInfinity)
+                    return false;
+            }
+            return true;
+        }
+
         /* 2-Opt solution is based on psuedo code found at https://en.wikipedia.org/wiki/2-opt */
-        private List<City> twoOptSwap(List<City> curRoute, int i, int k)
+        private TspSolution twoOptSwap(TspSolution curRoute, int i, int k)
         {
             List<City> newRoute = new List<City>();
             // 1.take route[1] to route[i - 1] and add them in order to new_route
             for (int p = 0; p < i; p++)
             {
-                newRoute.Add(curRoute[p]);
+                newRoute.Add(curRoute.Route[p]);
             }
             // 2.take route[i] to route[k] and add them in reverse order to new_route
             for(int p = k; p >= i; p--)
             {
-                newRoute.Add(curRoute[p]);
+                newRoute.Add(curRoute.Route[p]);
             }
             // 3.take route[k + 1] to end and add them in order to new_route
-            for(int p = k +1; p < curRoute.Count; p++)
+            for(int p = k +1; p < curRoute.Route.Count; p++)
             {
-                newRoute.Add(curRoute[p]);
+                newRoute.Add(curRoute.Route[p]);
             }
-            return newRoute;
+            return new TspSolution(newRoute);
         }
 
         public string[] ThreeOptSolveProblem()
