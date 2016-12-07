@@ -629,15 +629,204 @@ namespace TSP
         {
             var results = new string[3];
 
-            // TODO: Add your implementation for 3-opt here.
+            // get initial bssf using default algorithm
+            int i, swap, temp, count = 0;
+            int[] perm = new int[_cities.Length];
+            _route = new List<City>();
+            Random rnd = new Random();
 
-            results[Cost] = "3-opt not implemented";
-            results[Time] = "-1";
-            results[Count] = "-1";
+            do
+            {
+                for (i = 0; i < perm.Length; i++)                                 // create a random permutation template
+                    perm[i] = i;
+                for (i = 0; i < perm.Length; i++)
+                {
+                    swap = i;
+                    while (swap == i)
+                        swap = rnd.Next(0, _cities.Length);
+                    temp = perm[i];
+                    perm[i] = perm[swap];
+                    perm[swap] = temp;
+                }
+                _route.Clear();
+                for (i = 0; i < _cities.Length; i++)                            // Now build the route using the random permutation 
+                {
+                    _route.Add(_cities[perm[i]]);
+                }
+                _bssf = new TspSolution(_route);
+            } while (CostOfBssf() == double.PositiveInfinity);                // until a valid route is found
+
+
+            Stopwatch timer = new Stopwatch();
+            timer.Start();
+            count = 0;
+            TspSolution prevSolution = _bssf;
+
+            bool found = false;
+            do
+            {
+                double bestDist = _bssf.CostOfRoute();
+                found = false;
+                for (i = 0; i < _bssf.Route.Count-2; i++)
+                {
+                    for (int j = i + 1; j < _bssf.Route.Count-1; j++)
+                    {
+                        for (int k = j + 1; k < _bssf.Route.Count; k++)
+                        {
+                            TspSolution newRoute1 = threeOptSwapA(_bssf, i, j, k);
+                            TspSolution newRoute2 = threeOptSwapB(_bssf, i, j, k);
+                            TspSolution newRoute3 = threeOptSwapC(_bssf, i, j, k);
+
+                            double newDist1 = newRoute1.CostOfRoute();
+                            double newDist2 = newRoute2.CostOfRoute();
+                            double newDist3 = newRoute3.CostOfRoute();
+
+                            
+                            if (isCompleteSolution(newRoute1) && newDist1 < bestDist && newDist1 <= newDist2 && newDist1 <= newDist3)
+                            {
+                                prevSolution = _bssf;
+                                _bssf = newRoute1;
+                                found = true;
+                                count++;
+                                break;
+                            }
+                            if (isCompleteSolution(newRoute2) && newDist2 < bestDist && newDist2 <= newDist1 && newDist2 <= newDist3)
+                            {
+                                prevSolution = _bssf;
+                                _bssf = newRoute2;
+                                found = true;
+                                count++;
+                                break;
+                            }
+                            if (isCompleteSolution(newRoute3) && newDist3 < bestDist && newDist3 <= newDist2 && newDist3 <= newDist1)
+                            {
+                                prevSolution = _bssf;
+                                _bssf = newRoute3;
+                                found = true;
+                                count++;
+                                break;
+                            }
+                        }
+                        if (found)
+                            break;
+                    }
+                    if (found)
+                        break;
+                }
+            } while (found);
+
+
+            timer.Stop();
+
+            results[Cost] = _bssf.CostOfRoute().ToString();
+            results[Time] = timer.Elapsed.ToString();
+            results[Count] = count.ToString();
 
             return results;
         }
 
+        /* 2-Opt solution is based on psuedo code found at https://en.wikipedia.org/wiki/2-opt */
+        private TspSolution threeOptSwapA(TspSolution curRoute, int i, int j, int k)
+        {
+            List<City> newRoute = new List<City>();
+
+            curRoute = new TspSolution(pre_shift(curRoute.Route, i));
+
+            // 2.take route[i] to route[k] and add them in reverse order to new_route
+            for (int p = j; p >= 0; p--)
+            {
+                newRoute.Add(curRoute.Route[p]);
+            }
+            // 3.take route[k + 1] to end and add them in order to new_route
+            for (int p = j + 1; p < k; p++)
+            {
+                newRoute.Add(curRoute.Route[p]);
+            }
+            for (int p = curRoute.Route.Count - 1; p >= k; p--)
+            {
+                newRoute.Add(curRoute.Route[p]);
+            }
+            return new TspSolution(post_shift(newRoute, i));
+        }
+
+        /* 2-Opt solution is based on psuedo code found at https://en.wikipedia.org/wiki/2-opt */
+        private TspSolution threeOptSwapB(TspSolution curRoute, int i, int j, int k)
+        {
+            List<City> newRoute = new List<City>();
+
+            curRoute = new TspSolution(pre_shift(curRoute.Route, i));
+            
+            // 2.take route[i] to route[k] and add them in reverse order to new_route
+            for (int p = j; p >= 0; p--)
+            {
+                newRoute.Add(curRoute.Route[p]);
+            }
+            for (int p = k - 1; p > j; p--)
+            {
+                newRoute.Add(curRoute.Route[p]);
+            }
+            for (int p = curRoute.Route.Count - 1; p >= k; p--)
+            {
+                newRoute.Add(curRoute.Route[p]);
+            }
+            return new TspSolution(post_shift(newRoute, i));
+        }
+
+        /* 2-Opt solution is based on psuedo code found at https://en.wikipedia.org/wiki/2-opt */
+        private TspSolution threeOptSwapC(TspSolution curRoute, int i, int j, int k)
+        {
+            List<City> newRoute = new List<City>();
+
+            curRoute = new TspSolution(pre_shift(curRoute.Route, i));
+
+            // 1.take route[1] to route[i - 1] and add them in order to new_route
+            for (int p = 0; p <= j; p++)
+            {
+                newRoute.Add(curRoute.Route[p]);
+            }
+            // 2.take route[i] to route[k] and add them in reverse order to new_route
+            for (int p = k-1; p > j; p--)
+            {
+                newRoute.Add(curRoute.Route[p]);
+            }
+            for (int p = curRoute.Route.Count - 1; p >= k; p--)
+            {
+                newRoute.Add(curRoute.Route[p]);
+            }
+            return new TspSolution(post_shift(newRoute, i));
+        }
+
+        private List<City> pre_shift(List<City> x, int i)
+        {
+            List<City> newRoute = new List<City>();
+            
+            for (int p = i; p < x.Count; p++)
+            {
+                newRoute.Add(x[p]);
+            }
+            for (int p = 0; p<i; p++)
+            {
+                newRoute.Add(x[p]);
+            }
+
+            return newRoute;
+        }
+
+        private List<City> post_shift(List<City> x, int i)
+        {
+            List<City> newRoute = new List<City>();
+
+            for (int p = x.Count-i; p < x.Count; p++)
+            {
+                newRoute.Add(x[p]);
+            }
+            for (int p = i; p < x.Count-i; p++)
+            {
+                newRoute.Add(x[p]);
+            }
+
+            return newRoute;
+        }
         #endregion
     }
 }
