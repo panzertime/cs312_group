@@ -817,7 +817,7 @@ namespace TSP
             {
                 newRoute.Add(curRoute.Route[p]);
             }
-            for (int p = curRoute.Route.Count - 1; p >= k; p--)
+            for (int p = k; p < curRoute.Route.Count; p++)
             {
                 newRoute.Add(curRoute.Route[p]);
             }
