@@ -728,13 +728,19 @@ namespace TSP
                             TspSolution newRoute1 = threeOptSwapA(_bssf, i, j, k);
                             TspSolution newRoute2 = threeOptSwapB(_bssf, i, j, k);
                             TspSolution newRoute3 = threeOptSwapC(_bssf, i, j, k);
+                            TspSolution newRoute4 = twoOptSwap(_bssf, i, j);
+                            TspSolution newRoute5 = twoOptSwap(_bssf, j, k);
+                            TspSolution newRoute6 = twoOptSwap(_bssf, i, k);
 
                             double newDist1 = newRoute1.CostOfRoute();
                             double newDist2 = newRoute2.CostOfRoute();
                             double newDist3 = newRoute3.CostOfRoute();
+                            double newDist4 = newRoute4.CostOfRoute();
+                            double newDist5 = newRoute5.CostOfRoute();
+                            double newDist6 = newRoute6.CostOfRoute();
 
 
-                            if (isCompleteSolution(newRoute1) && newDist1 < bestDist && newDist1 <= newDist2 && newDist1 <= newDist3)
+                            if (isCompleteSolution(newRoute1) && newDist1 < bestDist && newDist1 <= newDist2 && newDist1 <= newDist3 && newDist1 <= newDist4 && newDist1 <= newDist5 && newDist1 <= newDist6)
                             {
                                 prevSolution = _bssf;
                                 _bssf = newRoute1;
@@ -742,7 +748,7 @@ namespace TSP
                                 count++;
                                 break;
                             }
-                            if (isCompleteSolution(newRoute2) && newDist2 < bestDist && newDist2 <= newDist1 && newDist2 <= newDist3)
+                            if (isCompleteSolution(newRoute2) && newDist2 < bestDist && newDist2 <= newDist1 && newDist2 <= newDist3 && newDist2 <= newDist4 && newDist2 <= newDist5 && newDist2 <= newDist6)
                             {
                                 prevSolution = _bssf;
                                 _bssf = newRoute2;
@@ -750,10 +756,34 @@ namespace TSP
                                 count++;
                                 break;
                             }
-                            if (isCompleteSolution(newRoute3) && newDist3 < bestDist && newDist3 <= newDist2 && newDist3 <= newDist1)
+                            if (isCompleteSolution(newRoute3) && newDist3 < bestDist && newDist3 <= newDist2 && newDist3 <= newDist1 && newDist3 <= newDist4 && newDist3 <= newDist5 && newDist3 <= newDist6)
                             {
                                 prevSolution = _bssf;
                                 _bssf = newRoute3;
+                                found = true;
+                                count++;
+                                break;
+                            }
+                            if (isCompleteSolution(newRoute4) && newDist4 < bestDist && newDist4 <= newDist2 && newDist4 <= newDist1 && newDist4 <= newDist3 && newDist4 <= newDist5 && newDist4 <= newDist6)
+                            {
+                                prevSolution = _bssf;
+                                _bssf = newRoute4;
+                                found = true;
+                                count++;
+                                break;
+                            }
+                            if (isCompleteSolution(newRoute5) && newDist5 < bestDist && newDist5 <= newDist2 && newDist5 <= newDist1 && newDist5 <= newDist4 && newDist5 <= newDist3 && newDist5 <= newDist6)
+                            {
+                                prevSolution = _bssf;
+                                _bssf = newRoute5;
+                                found = true;
+                                count++;
+                                break;
+                            }
+                            if (isCompleteSolution(newRoute6) && newDist6 < bestDist && newDist6 <= newDist2 && newDist6 <= newDist1 && newDist6 <= newDist4 && newDist6 <= newDist5 && newDist6 <= newDist3)
+                            {
+                                prevSolution = _bssf;
+                                _bssf = newRoute6;
                                 found = true;
                                 count++;
                                 break;
