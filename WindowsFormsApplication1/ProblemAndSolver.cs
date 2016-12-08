@@ -382,7 +382,43 @@ namespace TSP
             }
             return state;
         }
-        
+
+        private Tuple<double, int> CheapestNextCity(double[,] costMatrix, int fromCity, HashSet<int> toCities)
+        {
+            var nextCity = -1;
+            var nextCost = double.PositiveInfinity;
+            foreach (var toCity in toCities)
+            {
+                var thisCost = costMatrix[fromCity, toCity];
+                if (thisCost >= nextCost) continue;
+                nextCity = toCity;
+                nextCost = thisCost;
+            }
+            return new Tuple<double, int>(nextCost, nextCity);
+        }
+
+        private Tuple<double, List<int>> FastGreedyCalc(int startCity, double[,] costMatrix)
+        {
+            var n = costMatrix.GetLength(0);
+            var toCities = new HashSet<int>(Enumerable.Range(0, n));
+            var path = new List<int> { startCity };
+            var start = path[0];
+            toCities.Remove(startCity);
+
+            var head = path[path.Count - 1];
+            var totalLength = 0.0;
+            while (toCities.Count > 0)
+            {
+                var data = CheapestNextCity(costMatrix, head, toCities);
+                head = data.Item2;
+                totalLength += data.Item1;
+                path.Add(head);
+                toCities.Remove(head);
+            }
+            path.Add(start);
+            return new Tuple<double, List<int>>(totalLength, path);
+        }
+
 
         private TspSolution StateToSolution(TspState state)
         {
@@ -501,9 +537,25 @@ namespace TSP
             var timer = new Stopwatch();
 
             Debug.Assert(_cities.Length > 0);
-            var state = GreedyCalc(new TspState(_cities));
             timer.Start();
-            _bssf = StateToSolution(state);
+            var costMatrix = new TspState(_cities).CostMatrix;
+            if (_mode == HardMode.Modes.Hard)
+            {
+                // CostOfBssf() is still used because new TspState reduces the matrix once
+                var cost = double.PositiveInfinity;
+                for (var startCity = 0; startCity < _cities.Length; ++startCity)
+                {
+                    var thisResult = FastGreedyCalc(startCity, costMatrix);
+                    if (thisResult.Item1 >= cost) continue;
+                    cost = thisResult.Item1;
+                    _bssf = new TspSolution(thisResult.Item2.Select(i => _cities[i]));
+                }
+            }
+            else
+            {
+                var cityIndexes = FastGreedyCalc(0, costMatrix);
+                _bssf = new TspSolution(cityIndexes.Item2.Select(i => _cities[i]));
+            }
             timer.Stop();
 
             results[Cost] = CostOfBssf().ToString(CultureInfo.InvariantCulture);
