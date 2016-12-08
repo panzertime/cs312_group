@@ -28,12 +28,12 @@ namespace TSP
                     _cities[i] = new City(_rnd.NextDouble(), _rnd.NextDouble());
             else // Medium and hard
                 for (var i = 0; i < Size; i++)
-                    _cities[i] = new City(_rnd.NextDouble(), _rnd.NextDouble(), _rnd.NextDouble()*City.MaxElevation);
+                    _cities[i] = new City(_rnd.NextDouble(), _rnd.NextDouble(), _rnd.NextDouble() * City.MaxElevation);
 
             var mm = new HardMode(_mode, _rnd, _cities);
             if (_mode == HardMode.Modes.Hard)
             {
-                var edgesToRemove = (int) (Size*FractionOfPathsToRemove);
+                var edgesToRemove = (int)(Size * FractionOfPathsToRemove);
                 mm.RemovePaths(edgesToRemove);
             }
             City.SetModeManager(mm);
@@ -183,7 +183,7 @@ namespace TSP
             Seed = 1;
             _rnd = new Random(1);
             Size = DefaultSize;
-            _timeLimit = TimeLimit*1000; // TIME_LIMIT is in seconds, but timer wants it in milliseconds
+            _timeLimit = TimeLimit * 1000; // TIME_LIMIT is in seconds, but timer wants it in milliseconds
 
             ResetData();
         }
@@ -193,7 +193,7 @@ namespace TSP
             Seed = seed;
             _rnd = new Random(seed);
             Size = DefaultSize;
-            _timeLimit = TimeLimit*1000; // TIME_LIMIT is in seconds, but timer wants it in milliseconds
+            _timeLimit = TimeLimit * 1000; // TIME_LIMIT is in seconds, but timer wants it in milliseconds
 
             ResetData();
         }
@@ -203,7 +203,7 @@ namespace TSP
             Seed = seed;
             Size = size;
             _rnd = new Random(seed);
-            _timeLimit = TimeLimit*1000; // TIME_LIMIT is in seconds, but timer wants it in milliseconds
+            _timeLimit = TimeLimit * 1000; // TIME_LIMIT is in seconds, but timer wants it in milliseconds
 
             ResetData();
         }
@@ -213,7 +213,7 @@ namespace TSP
             Seed = seed;
             Size = size;
             _rnd = new Random(seed);
-            _timeLimit = time*1000; // time is entered in the GUI in seconds, but timer wants it in milliseconds
+            _timeLimit = time * 1000; // time is entered in the GUI in seconds, but timer wants it in milliseconds
 
             ResetData();
         }
@@ -241,7 +241,7 @@ namespace TSP
         {
             Size = size;
             _mode = mode;
-            _timeLimit = timelimit*1000; //convert seconds to milliseconds
+            _timeLimit = timelimit * 1000; //convert seconds to milliseconds
             ResetData();
         }
 
@@ -277,17 +277,17 @@ namespace TSP
                 {
                     if (index < _bssf.Route.Count - 1)
                         g.DrawString(" " + index + "(" + c.CostToGetTo(_bssf.Route[index + 1]) + ")", labelFont,
-                            _cityBrushStartStyle, new PointF((float) c.X*width + 3F, (float) c.Y*height));
+                            _cityBrushStartStyle, new PointF((float)c.X * width + 3F, (float)c.Y * height));
                     else
                         g.DrawString(" " + index + "(" + c.CostToGetTo(_bssf.Route[0]) + ")", labelFont,
-                            _cityBrushStartStyle, new PointF((float) c.X*width + 3F, (float) c.Y*height));
-                    ps[index++] = new Point((int) (c.X*width) + CityIconSize/2, (int) (c.Y*height) + CityIconSize/2);
+                            _cityBrushStartStyle, new PointF((float)c.X * width + 3F, (float)c.Y * height));
+                    ps[index++] = new Point((int)(c.X * width) + CityIconSize / 2, (int)(c.Y * height) + CityIconSize / 2);
                 }
 
                 if (ps.Length > 0)
                 {
                     g.DrawLines(_routePenStyle, ps);
-                    g.FillEllipse(_cityBrushStartStyle, (float) _cities[0].X*width - 1, (float) _cities[0].Y*height - 1,
+                    g.FillEllipse(_cityBrushStartStyle, (float)_cities[0].X * width - 1, (float)_cities[0].Y * height - 1,
                         CityIconSize + 2, CityIconSize + 2);
                 }
 
@@ -297,7 +297,7 @@ namespace TSP
 
             // Draw city dots
             foreach (var c in _cities)
-                g.FillEllipse(_cityBrushStyle, (float) c.X*width, (float) c.Y*height, CityIconSize, CityIconSize);
+                g.FillEllipse(_cityBrushStyle, (float)c.X * width, (float)c.Y * height, CityIconSize, CityIconSize);
         }
 
         /// <summary>
@@ -400,9 +400,9 @@ namespace TSP
         public string[] BranchBoundSolveProblem()
         {
             var results = new string[3];
-            
+
             var timer = new Stopwatch();
-            
+
             Debug.Assert(_cities.Length > 0);
             var baseState = new TspState(_cities);
 
@@ -448,7 +448,7 @@ namespace TSP
                         }
                         ++stored;
                         if (queue.Count + 5 >= queue.MaxSize)
-                            queue.Resize(queue.MaxSize*2);
+                            queue.Resize(queue.MaxSize * 2);
                         // Runs in O(log n) time
                         queue.Enqueue(branchState, branchState.Heuristic());
                     }
@@ -460,14 +460,14 @@ namespace TSP
                     break;
             }
             timer.Stop();
-            
+
             Debug.Assert(bestState != null && bestState.IsComplete);
             _bssf = StateToSolution(bestState);
 
             results[Cost] = CostOfBssf().ToString(CultureInfo.InvariantCulture); // load results array
             results[Time] = timer.Elapsed.ToString();
             results[Count] = $"{maxStates}/{updates}/{stored}/{pruned}";
-            
+
             return results;
         }
 
@@ -555,14 +555,14 @@ namespace TSP
             do
             {
                 double bestDist = _bssf.CostOfRoute();
-                for(i = 0; i < _bssf.Route.Count; i++)
+                for (i = 0; i < _bssf.Route.Count; i++)
                 {
                     found = false;
-                    for(int k = i + 1; k < _bssf.Route.Count; k++)
+                    for (int k = i + 1; k < _bssf.Route.Count; k++)
                     {
                         TspSolution newRoute = twoOptSwap(_bssf, i, k);
                         double newDist = newRoute.CostOfRoute();
-                        if(isCompleteSolution(newRoute) && newDist < bestDist)
+                        if (isCompleteSolution(newRoute) && newDist < bestDist)
                         {
                             prevSolution = _bssf;
                             _bssf = newRoute;
@@ -576,7 +576,7 @@ namespace TSP
                 }
             } while (found);
 
-            
+
             timer.Stop();
 
             results[Cost] = _bssf.CostOfRoute().ToString();
@@ -597,7 +597,7 @@ namespace TSP
                 //O(n)
                 if (!tspSolution.Route.Contains(_cities[i]))
                     return false;
-                if (i+ 1 < _cities.Length && tspSolution.Route[i].CostToGetTo(tspSolution.Route[i + 1]) == double.PositiveInfinity)
+                if (i + 1 < _cities.Length && tspSolution.Route[i].CostToGetTo(tspSolution.Route[i + 1]) == double.PositiveInfinity)
                     return false;
             }
             return true;
@@ -613,12 +613,12 @@ namespace TSP
                 newRoute.Add(curRoute.Route[p]);
             }
             // 2.take route[i] to route[k] and add them in reverse order to new_route
-            for(int p = k; p >= i; p--)
+            for (int p = k; p >= i; p--)
             {
                 newRoute.Add(curRoute.Route[p]);
             }
             // 3.take route[k + 1] to end and add them in order to new_route
-            for(int p = k +1; p < curRoute.Route.Count; p++)
+            for (int p = k + 1; p < curRoute.Route.Count; p++)
             {
                 newRoute.Add(curRoute.Route[p]);
             }
@@ -667,9 +667,9 @@ namespace TSP
             {
                 double bestDist = _bssf.CostOfRoute();
                 found = false;
-                for (i = 0; i < _bssf.Route.Count-2; i++)
+                for (i = 0; i < _bssf.Route.Count - 2; i++)
                 {
-                    for (int j = i + 1; j < _bssf.Route.Count-1; j++)
+                    for (int j = i + 1; j < _bssf.Route.Count - 1; j++)
                     {
                         for (int k = j + 1; k < _bssf.Route.Count; k++)
                         {
@@ -681,7 +681,7 @@ namespace TSP
                             double newDist2 = newRoute2.CostOfRoute();
                             double newDist3 = newRoute3.CostOfRoute();
 
-                            
+
                             if (isCompleteSolution(newRoute1) && newDist1 < bestDist && newDist1 <= newDist2 && newDist1 <= newDist3)
                             {
                                 prevSolution = _bssf;
@@ -755,7 +755,7 @@ namespace TSP
             List<City> newRoute = new List<City>();
 
             curRoute = new TspSolution(pre_shift(curRoute.Route, i));
-            
+
             // 2.take route[i] to route[k] and add them in reverse order to new_route
             for (int p = j; p >= 0; p--)
             {
@@ -785,7 +785,7 @@ namespace TSP
                 newRoute.Add(curRoute.Route[p]);
             }
             // 2.take route[i] to route[k] and add them in reverse order to new_route
-            for (int p = k-1; p > j; p--)
+            for (int p = k - 1; p > j; p--)
             {
                 newRoute.Add(curRoute.Route[p]);
             }
@@ -799,12 +799,12 @@ namespace TSP
         private List<City> pre_shift(List<City> x, int i)
         {
             List<City> newRoute = new List<City>();
-            
+
             for (int p = i; p < x.Count; p++)
             {
                 newRoute.Add(x[p]);
             }
-            for (int p = 0; p<i; p++)
+            for (int p = 0; p < i; p++)
             {
                 newRoute.Add(x[p]);
             }
@@ -816,11 +816,11 @@ namespace TSP
         {
             List<City> newRoute = new List<City>();
 
-            for (int p = x.Count-i; p < x.Count; p++)
+            for (int p = x.Count - i; p < x.Count; p++)
             {
                 newRoute.Add(x[p]);
             }
-            for (int p = i; p < x.Count-i; p++)
+            for (int p = i; p < x.Count - i; p++)
             {
                 newRoute.Add(x[p]);
             }
@@ -830,4 +830,3 @@ namespace TSP
         #endregion
     }
 }
- 
